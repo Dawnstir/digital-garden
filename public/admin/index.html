@@ -3,22 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digital Garden</title>
-  <style>
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      height: 100vh; 
-      margin: 0; 
-      background: #f5f0e8; 
-    }
-    h1 { color: #3d3d3d; font-weight: 300; }
-  </style>
+  <title>Admin · Digital Garden</title>
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/monet-theme.css">
+  <link rel="stylesheet" href="/css/layout.css">
 </head>
-<body>
-  <h1>Digital Garden 🌿</h1>
-  <p>骨架已搭建，等待填充...</p>
+<body class="admin-body">
+  <!-- 后台卡片：玻璃拟态深色 -->
+  <div class="admin-card glass-dark">
+    <h1>🌿 Admin</h1>
+    
+    <!-- PIN 登录（第一版先占位） -->
+    <div id="login-section">
+      <input type="password" class="input" placeholder="输入 PIN 码" style="margin-bottom:16px;">
+      <button class="btn" style="width:100%;">进入后台</button>
+    </div>
+
+    <!-- 编辑器（登录后显示，现在隐藏） -->
+    <div id="editor-section" style="display:none;">
+      <div style="margin-bottom:24px;">
+        <label style="display:block;color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:8px;">今日单词数量</label>
+        <input type="number" class="input" placeholder="0">
+      </div>
+      <div style="margin-bottom:24px;">
+        <label style="display:block;color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:8px;">今日日记</label>
+        <textarea class="input" rows="8" placeholder="写点什么..."></textarea>
+      </div>
+      <button class="btn" style="width:100%;">发布</button>
+    </div>
+  </div>
 </body>
 </html>

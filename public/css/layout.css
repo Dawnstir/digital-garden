@@ -1,0 +1,150 @@
+/**
+ * layout.css
+ * 页面骨架：导航、网格、响应式、主页结构。
+ */
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* === 容器：最大宽度 + 居中 + 大量留白 === */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* === 顶部导航（极简，几乎隐形）=== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: var(--space-3) 0;
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-title {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--color-text);
+}
+
+/* === 主页：今日单词区域 === */
+.hero-words {
+  padding: var(--space-8) 0 var(--space-6);
+  text-align: center;
+}
+
+.hero-words .label {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-3);
+}
+
+.hero-words .number {
+  font-size: 80px;
+  font-weight: 200;
+  line-height: 1;
+  color: var(--color-primary);
+  letter-spacing: -2px;
+}
+
+.hero-words .unit {
+  font-size: 18px;
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
+
+.hero-words .streak {
+  margin-top: var(--space-4);
+  font-size: 14px;
+  color: var(--color-success);
+}
+
+/* === 日记流 === */
+.diary-stream {
+  padding-bottom: var(--space-8);
+}
+
+.diary-stream .section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: var(--space-5);
+}
+
+.diary-item {
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.diary-item:last-child {
+  border-bottom: none;
+}
+
+.diary-item .date {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.diary-item .title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+  line-height: 1.4;
+}
+
+.diary-item .excerpt {
+  font-size: 15px;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+/* === 后台页面（深色背景 + 居中卡片）=== */
+.admin-body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.admin-card {
+  width: 100%;
+  max-width: 480px;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+}
+
+.admin-card h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: var(--space-5);
+  text-align: center;
+  color: #fff;
+}
+
+/* === 响应式 === */
+@media (max-width: 640px) {
+  .hero-words .number {
+    font-size: 56px;
+  }
+  
+  .container {
+    padding: 0 var(--space-3);
+  }
+}
