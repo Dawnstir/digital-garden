@@ -9,28 +9,29 @@
   <link rel="stylesheet" href="/css/layout.css">
 </head>
 <body class="admin-body">
-  <!-- 后台卡片：玻璃拟态深色 -->
   <div class="admin-card glass-dark">
     <h1>🌿 Admin</h1>
     
-    <!-- PIN 登录（第一版先占位） -->
+    <!-- PIN 登录 -->
     <div id="login-section">
-      <input type="password" class="input" placeholder="输入 PIN 码" style="margin-bottom:16px;">
-      <button class="btn" style="width:100%;">进入后台</button>
+      <input type="password" id="pin-input" class="input" placeholder="输入 PIN 码" style="margin-bottom:16px;">
+      <button id="login-btn" class="btn" style="width:100%;">进入后台</button>
     </div>
 
-    <!-- 编辑器（登录后显示，现在隐藏） -->
+    <!-- 编辑器 -->
     <div id="editor-section" style="display:none;">
       <div style="margin-bottom:24px;">
         <label style="display:block;color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:8px;">今日单词数量</label>
-        <input type="number" class="input" placeholder="0">
+        <input type="number" id="word-input" class="input" placeholder="0">
       </div>
       <div style="margin-bottom:24px;">
         <label style="display:block;color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:8px;">今日日记</label>
-        <textarea class="input" rows="8" placeholder="写点什么..."></textarea>
+        <textarea id="diary-input" class="input" rows="8" placeholder="写点什么..."></textarea>
       </div>
-      <button class="btn" style="width:100%;">发布</button>
+      <button id="publish-btn" class="btn" style="width:100%;">发布</button>
     </div>
   </div>
+  
+  <script type="module" src="/js/admin.js"></script>
 </body>
 </html>
