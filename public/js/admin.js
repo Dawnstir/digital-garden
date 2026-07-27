@@ -55,7 +55,7 @@ document.getElementById('publish-btn').addEventListener('click', async () => {
     // 并行保存
     const promises = [];
     if (count > 0) promises.push(saveWords(count));
-    if (content) promises.push(saveDiary(title, content)); // 传入填写的标题
+    if (content) promises.push(saveDiary(content, title));// 传入填写的标题
     
     await Promise.all(promises);
     
