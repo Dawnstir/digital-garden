@@ -1,25 +1,39 @@
 /**
- * 日记 API - Step 1 占位版
- * GET  /api/diaries   -> 返回最近 20 篇日记
- * POST /api/diaries   -> 发布日记（后续实现）
+ * diaries.js
+ * GET  /api/diaries?limit=N  -> 日记列表（时间倒序）
+ * POST /api/diaries          -> 发布日记（需登录）
  */
+
+import { corsHeaders, verifyToken, jsonError, jsonOk } from './_utils.js';
+
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { env, request } = context;
+  const url = new URL(request.url);
+  const limit = parseInt(url.searchParams.get('limit'), 10) || 20;
   
   const { results } = await env.DB.prepare(
-    "SELECT * FROM diaries ORDER BY created_at DESC LIMIT 20"
-  ).all();
+    "SELECT * FROM diaries ORDER BY created_at DESC LIMIT ?"
+  ).bind(limit).all();
   
-  return new Response(JSON.stringify(results), {
-    headers: { 
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    }
-  });
+  return jsonOk(results || []);
 }
 
 export async function onRequestPost(context) {
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: { 'Content-Type': 'application/json' }
-  });
+  if (!await verifyToken(context)) {
+    return jsonError('未授权', 401);
+  }
+  
+  const { env, request } = context;
+  const body = await request.json().catch(() => ({}));
+  const { title = '', content = '' } = body;
+  
+  if (!content.trim()) {
+    return jsonError('日记内容不能为空');
+  }
+  
+  const { meta } = await env.DB.prepare(
+    "INSERT INTO diaries (title, content) VALUES (?, ?)"
+  ).bind(title, content).run();
+  
+  return jsonOk({ id: meta.last_row_id, title, content });
 }
