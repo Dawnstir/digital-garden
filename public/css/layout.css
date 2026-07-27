@@ -143,8 +143,189 @@ body {
   .hero-words .number {
     font-size: 56px;
   }
-  
+
   .container {
     padding: 0 var(--space-3);
+  }
+}
+
+/* === 日记可点击提示 === */
+.diary-item {
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.diary-item:hover {
+  opacity: 0.7;
+}
+
+/* === 弹窗遮罩【仅此处修正，其余完全不动】=== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(61, 61, 61, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* 修复：默认完全隐藏，不会遮挡页面点击 */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* === 弹窗内容卡片 === */
+.modal-content {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 720px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+  position: relative;
+  transform: translateY(16px) scale(0.98);
+  transition: transform var(--transition-base);
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0) scale(1);
+}
+
+/* === 关闭按钮 === */
+.modal-close {
+  position: sticky;
+  float: right;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  transition: all var(--transition-fast);
+  margin-bottom: var(--space-2);
+}
+
+.modal-close:hover {
+  background: var(--monet-rose-mist);
+  color: #fff;
+}
+
+.modal-date {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+  clear: both;
+}
+
+.modal-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: var(--space-5);
+  line-height: 1.3;
+}
+
+/* === Markdown 正文样式 === */
+.modal-body {
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--color-text);
+}
+
+.modal-body h1,
+.modal-body h2,
+.modal-body h3 {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.modal-body p {
+  margin-bottom: var(--space-4);
+}
+
+.modal-body blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: var(--space-4);
+  margin: var(--space-4) 0;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.modal-body pre {
+  background: #f8f6f2;
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  overflow-x: auto;
+  margin: var(--space-4) 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.modal-body code {
+  background: #f0ece4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: "SF Mono", Monaco, monospace;
+}
+
+.modal-body pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+.modal-body img {
+  border-radius: var(--radius-md);
+  margin: var(--space-4) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.modal-body ul,
+.modal-body ol {
+  margin: var(--space-3) 0 var(--space-4) var(--space-5);
+}
+
+.modal-body li {
+  margin-bottom: var(--space-2);
+}
+
+.modal-body hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-6) 0;
+}
+
+/* 移动端弹窗全宽 */
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    max-height: 90vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(100%);
+  }
+
+  .modal-overlay.active .modal-content {
+    transform: translateY(0);
   }
 }

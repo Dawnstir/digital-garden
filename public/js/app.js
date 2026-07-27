@@ -1,11 +1,11 @@
 /**
  * app.js
- * 主页逻辑：加载今日单词 + 日记流。
+ * 主页逻辑：加载今日单词 + 日记流 + 弹窗详情。
  */
 
 import { getTodayWords, getDiaries } from './api.js';
 
-// 格式化日期：2026-07-27 → 2026年7月27日
+// 格式化日期
 function formatDate(dateStr) {
   const d = new Date(dateStr);
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
@@ -23,6 +23,44 @@ async function loadWords() {
   }
 }
 
+// === 弹窗 DOM 引用 ===
+const modal = document.getElementById('diary-modal');
+const modalDate = document.getElementById('modal-date');
+const modalTitle = document.getElementById('modal-title');
+const modalBody = document.getElementById('modal-body');
+const modalClose = document.getElementById('modal-close');
+
+// 打开弹窗
+function openModal(diary) {
+  modalDate.textContent = formatDate(diary.created_at);
+  modalTitle.textContent = diary.title || '无标题';
+  // marked.js 从 CDN 加载，挂载在 window.marked
+  modalBody.innerHTML = window.marked.parse(diary.content || '');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden'; // 禁止背景滚动
+}
+
+// 关闭弹窗
+function closeModal() {
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// 关闭按钮
+modalClose.addEventListener('click', closeModal);
+
+// 点击遮罩关闭
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeModal();
+});
+
+// ESC 键关闭
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modal.classList.contains('active')) {
+    closeModal();
+  }
+});
+
 // 加载日记列表
 async function loadDiaries() {
   try {
@@ -34,19 +72,24 @@ async function loadDiaries() {
       return;
     }
     
-    container.innerHTML = diaries.map(d => `
-      <div class="diary-item">
+    container.innerHTML = '';
+    diaries.forEach(d => {
+      const item = document.createElement('div');
+      item.className = 'diary-item';
+      item.innerHTML = `
         <div class="date">${formatDate(d.created_at)}</div>
         <div class="title">${d.title || '无标题'}</div>
         <div class="excerpt">${d.content.substring(0, 120)}${d.content.length > 120 ? '...' : ''}</div>
-      </div>
-    `).join('');
+      `;
+      item.addEventListener('click', () => openModal(d));
+      container.appendChild(item);
+    });
   } catch (e) {
     console.error('加载日记失败:', e);
   }
 }
 
-// 页面加载时执行
+// 初始化
 document.addEventListener('DOMContentLoaded', () => {
   loadWords();
   loadDiaries();
