@@ -30,16 +30,23 @@ const modalTitle = document.getElementById('modal-title');
 const modalBody = document.getElementById('modal-body');
 const modalClose = document.getElementById('modal-close');
 
-// 打开弹窗（增加marked不存在兜底）
+// 打开弹窗（轮询等待marked加载完成，解决Module异步时序问题）
 function openModal(diary) {
   modalDate.textContent = formatDate(diary.created_at);
   modalTitle.textContent = diary.title || '无标题';
 
-  if (window.marked) {
-    modalBody.innerHTML = window.marked.parse(diary.content || '');
-  } else {
-    modalBody.innerText = diary.content || '';
+  let retryCount = 0;
+  function renderMdContent() {
+    if (window.marked && typeof window.marked.parse === 'function') {
+      modalBody.innerHTML = window.marked.parse(diary.content || '');
+    } else if (retryCount < 8) {
+      retryCount++;
+      setTimeout(renderMdContent, 200);
+    } else {
+      modalBody.innerText = diary.content || '';
+    }
   }
+  renderMdContent();
 
   modal.classList.add('active');
   document.body.style.overflow = 'hidden'; // 禁止背景滚动
