@@ -16,7 +16,7 @@ async function loadWords() {
   try {
     const data = await getTodayWords();
     document.getElementById('word-count').textContent = data.count || 0;
-    document.getElementById('word-streak').textContent = 
+    document.getElementById('word-streak').textContent =
       `连续打卡 ${data.streak || 0} 天`;
   } catch (e) {
     console.error('加载单词失败:', e);
@@ -30,12 +30,17 @@ const modalTitle = document.getElementById('modal-title');
 const modalBody = document.getElementById('modal-body');
 const modalClose = document.getElementById('modal-close');
 
-// 打开弹窗
+// 打开弹窗（增加marked不存在兜底）
 function openModal(diary) {
   modalDate.textContent = formatDate(diary.created_at);
   modalTitle.textContent = diary.title || '无标题';
-  // marked.js 从 CDN 加载，挂载在 window.marked
-  modalBody.innerHTML = window.marked.parse(diary.content || '');
+
+  if (window.marked) {
+    modalBody.innerHTML = window.marked.parse(diary.content || '');
+  } else {
+    modalBody.innerText = diary.content || '';
+  }
+
   modal.classList.add('active');
   document.body.style.overflow = 'hidden'; // 禁止背景滚动
 }
@@ -66,12 +71,12 @@ async function loadDiaries() {
   try {
     const diaries = await getDiaries();
     const container = document.getElementById('diary-list');
-    
+
     if (!diaries || diaries.length === 0) {
       container.innerHTML = '<div class="diary-item"><div class="excerpt">还没有日记，去后台写一篇吧 ✍️</div></div>';
       return;
     }
-    
+
     container.innerHTML = '';
     diaries.forEach(d => {
       const item = document.createElement('div');
