@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Garden</title>
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/monet-theme.css">
+  <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+  <!-- 导航栏：未来新增模块只需在 router.js 注册，这里自动生成 -->
+  <nav class="site-nav glass" id="site-nav">
+    <div class="nav-inner">
+      <a href="#/" class="nav-brand">🌿 Garden</a>
+      <div class="nav-links" id="nav-links"></div>
+      <a href="/admin/" class="nav-admin">Admin</a>
+    </div>
+  </nav>
+
+  <!-- 路由出口：所有页面内容渲染到这里 -->
+  <main id="app"></main>
+
+  <!-- 日记弹窗（全局复用） -->
+  <div id="diary-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-date" id="modal-date"></div>
+      <h2 class="modal-title" id="modal-title"></h2>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="/js/lib/marked.esm.js" type="module"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

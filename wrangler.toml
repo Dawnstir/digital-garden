@@ -1,0 +1,13 @@
+name = "digital-garden"
+compatibility_date = "2026-07-26"
+
+# D1 数据库绑定：在 Pages Functions 里用 env.DB 访问
+[[d1_databases]]
+binding = "DB"
+database_name = "garden-db"
+database_id = 4fe31380-ef70-4d41-9831-eaf416537bc6
+
+# KV 命名空间绑定：在 Pages Functions 里用 env.SESSIONS 访问
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = 31f273a41cfa429fbed00a318159430d
