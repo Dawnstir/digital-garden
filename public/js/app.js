@@ -4,6 +4,7 @@
  */
 
 import { getTodayWords, getDiaries } from './api.js';
+import { marked } from './lib/marked.esm.js';   // ESM 直接导入，不依赖 window
 
 // 格式化日期
 function formatDate(dateStr) {
@@ -30,26 +31,15 @@ const modalTitle = document.getElementById('modal-title');
 const modalBody = document.getElementById('modal-body');
 const modalClose = document.getElementById('modal-close');
 
-// 打开弹窗（轮询等待marked加载完成，解决Module异步时序问题）
+// 打开弹窗
 function openModal(diary) {
   modalDate.textContent = formatDate(diary.created_at);
-  modalTitle.textContent = diary.title || '无标题';
-
-  let retryCount = 0;
-  function renderMdContent() {
-    if (window.marked && typeof window.marked.parse === 'function') {
-      modalBody.innerHTML = window.marked.parse(diary.content || '');
-    } else if (retryCount < 8) {
-      retryCount++;
-      setTimeout(renderMdContent, 200);
-    } else {
-      modalBody.innerText = diary.content || '';
-    }
-  }
-  renderMdContent();
-
+  // 有标题显示标题，没标题显示日期
+  modalTitle.textContent = diary.title || formatDate(diary.created_at);
+  // ESM 导入的 marked，直接调用，无需轮询
+  modalBody.innerHTML = marked.parse(diary.content || '');
   modal.classList.add('active');
-  document.body.style.overflow = 'hidden'; // 禁止背景滚动
+  document.body.style.overflow = 'hidden';
 }
 
 // 关闭弹窗
@@ -90,7 +80,7 @@ async function loadDiaries() {
       item.className = 'diary-item';
       item.innerHTML = `
         <div class="date">${formatDate(d.created_at)}</div>
-        <div class="title">${d.title || '无标题'}</div>
+        <div class="title">${d.title || formatDate(d.created_at)}</div>
         <div class="excerpt">${d.content.substring(0, 120)}${d.content.length > 120 ? '...' : ''}</div>
       `;
       item.addEventListener('click', () => openModal(d));
