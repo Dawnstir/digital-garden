@@ -329,3 +329,46 @@ body {
     transform: translateY(0);
   }
 }
+/* === 日记分组 === */
+.diary-group {
+  margin-bottom: var(--space-6);
+}
+
+.diary-group-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: var(--space-3);
+  padding-left: var(--space-1);
+}
+
+/* === 骨架屏 === */
+.skeleton {
+  background: linear-gradient(90deg, #f0ece4 25%, #e8e2d8 50%, #f0ece4 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+  height: 16px;
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-title {
+  height: 22px;
+  width: 55%;
+  margin-bottom: var(--space-3);
+}
+
+.skeleton-date {
+  height: 12px;
+  width: 50px;
+}

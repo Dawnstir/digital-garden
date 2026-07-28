@@ -1,20 +1,29 @@
 /**
  * diaries.js
- * GET  /api/diaries?limit=N  -> 日记列表（时间倒序）
- * POST /api/diaries          -> 发布日记（需登录）
+ * GET  /api/diaries?limit=N&date=YYYY-MM-DD  -> 支持按日期筛选
+ * POST /api/diaries                         -> 新建日记
  */
 
-import { corsHeaders, verifyToken, jsonError, jsonOk } from './_utils.js';
+import { verifyToken, jsonError, jsonOk } from './_utils.js';
 
 export async function onRequestGet(context) {
   const { env, request } = context;
   const url = new URL(request.url);
   const limit = parseInt(url.searchParams.get('limit'), 10) || 20;
+  const date = url.searchParams.get('date');  // 可选：按创建日期筛选
   
-  const { results } = await env.DB.prepare(
-    "SELECT * FROM diaries ORDER BY created_at DESC LIMIT ?"
-  ).bind(limit).all();
+  let sql = "SELECT * FROM diaries";
+  const params = [];
   
+  if (date) {
+    sql += " WHERE date(created_at) = ?";
+    params.push(date);
+  }
+  
+  sql += " ORDER BY created_at DESC LIMIT ?";
+  params.push(limit);
+  
+  const { results } = await env.DB.prepare(sql).bind(...params).all();
   return jsonOk(results || []);
 }
 

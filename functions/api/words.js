@@ -1,26 +1,28 @@
 /**
  * words.js
- * GET  /api/words     -> 返回今日单词（含连续打卡）
- * POST /api/words     -> 保存今日单词数量（需登录）
+ * GET  /api/words?date=YYYY-MM-DD  -> 查任意日期（默认今天）
+ * POST /api/words                  -> 保存今日单词（自动处理 streak）
  */
 
-import { corsHeaders, verifyToken, jsonError, jsonOk, getTodayYesterday } from './_utils.js';
+import { verifyToken, jsonError, jsonOk, getTodayYesterday } from './_utils.js';
 
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { env, request } = context;
+  const url = new URL(request.url);
+  const date = url.searchParams.get('date');
   const { today } = getTodayYesterday();
   
-  // 查今天记录，没有则返回默认值
+  const targetDate = date || today;
+  
   const { results } = await env.DB.prepare(
     "SELECT * FROM daily_words WHERE date = ?"
-  ).bind(today).all();
+  ).bind(targetDate).all();
   
-  const data = results[0] || { date: today, count: 0, streak: 0 };
+  const data = results[0] || { date: targetDate, count: 0, streak: 0 };
   return jsonOk(data);
 }
 
 export async function onRequestPost(context) {
-  // 验证登录
   if (!await verifyToken(context)) {
     return jsonError('未授权', 401);
   }
@@ -31,14 +33,23 @@ export async function onRequestPost(context) {
   
   const { today, yesterday } = getTodayYesterday();
   
-  // 查昨天记录，决定连续天数
-  const { results: yestRes } = await env.DB.prepare(
-    "SELECT streak FROM daily_words WHERE date = ? AND count > 0"
-  ).bind(yesterday).all();
+  // 查今天是否已有记录
+  const { results: todayRes } = await env.DB.prepare(
+    "SELECT streak FROM daily_words WHERE date = ?"
+  ).bind(today).all();
   
-  const streak = yestRes.length > 0 ? (yestRes[0].streak + 1) : 1;
+  let streak;
+  if (todayRes.length > 0 && todayRes[0].streak > 0) {
+    // 今天已有有效记录，保持 streak（用户只是修改数量）
+    streak = todayRes[0].streak;
+  } else {
+    // 今天没有或 count=0，查昨天决定 streak
+    const { results: yestRes } = await env.DB.prepare(
+      "SELECT streak FROM daily_words WHERE date = ? AND count > 0"
+    ).bind(yesterday).all();
+    streak = yestRes.length > 0 ? (yestRes[0].streak + 1) : (count > 0 ? 1 : 0);
+  }
   
-  // 插入或更新今天记录
   await env.DB.prepare(`
     INSERT INTO daily_words (date, count, streak, updated_at)
     VALUES (?, ?, ?, CURRENT_TIMESTAMP)
