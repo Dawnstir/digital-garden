@@ -1,76 +1,90 @@
 /**
  * admin.js
- * 后台逻辑：PIN 登录 + 单词/日记发布（新增标题字段+实时字数统计）
+ * 后台逻辑：PIN 登录 + 标题/单词/日记发布 + 字数统计 + 成功反馈。
  */
 
 import { login, saveWords, saveDiary, isLoggedIn, logout } from './api.js';
 
-// 切换登录/编辑器界面
+const $ = id => document.getElementById(id);
+
+// === 界面切换 ===
 function showEditor() {
-  document.getElementById('login-section').style.display = 'none';
-  document.getElementById('editor-section').style.display = 'block';
+  $('login-section').style.display = 'none';
+  $('editor-section').style.display = 'block';
 }
 
 function showLogin() {
-  document.getElementById('login-section').style.display = 'block';
-  document.getElementById('editor-section').style.display = 'none';
+  $('login-section').style.display = 'block';
+  $('editor-section').style.display = 'none';
 }
 
-// PIN 登录
-document.getElementById('login-btn').addEventListener('click', async () => {
-  const pin = document.getElementById('pin-input').value;
+// === 成功提示 ===
+function showToast(msg = '发布成功 🌿') {
+  const toast = $('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// === PIN 登录 ===
+$('login-btn').addEventListener('click', async () => {
+  const pin = $('pin-input').value.trim();
   if (!pin) return alert('请输入 PIN 码');
   
   try {
     await login(pin);
     showEditor();
+    $('pin-input').value = '';
   } catch (e) {
     alert('PIN 码错误');
   }
 });
 
-// 回车快捷登录
-document.getElementById('pin-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') document.getElementById('login-btn').click();
-});
+// === 字数统计 ===
+const diaryInput = $('diary-input');
+const charCount = $('char-count');
 
-// 实时字数统计绑定
-const diaryInput = document.getElementById('diary-input');
-const charCountDom = document.getElementById('char-count');
 diaryInput.addEventListener('input', () => {
-  charCountDom.textContent = diaryInput.value.length;
+  charCount.textContent = diaryInput.value.length;
 });
 
-// 发布按钮
-document.getElementById('publish-btn').addEventListener('click', async () => {
-  const count = parseInt(document.getElementById('word-input').value) || 0;
-  const title = document.getElementById('title-input').value.trim();
+// === 发布 ===
+$('publish-btn').addEventListener('click', async () => {
+  const title = $('title-input').value.trim();
+  const count = parseInt($('word-input').value, 10) || 0;
   const content = diaryInput.value.trim();
-  
+
   if (!content && count === 0) {
-    return alert('至少填写一项');
+    return alert('至少填写一项内容');
   }
-  
+
+  const btn = $('publish-btn');
+  btn.disabled = true;
+  btn.textContent = '发布中...';
+
   try {
-    // 并行保存
     const promises = [];
     if (count > 0) promises.push(saveWords(count));
-    if (content) promises.push(saveDiary(title, content));// 传入填写的标题
+    if (content) promises.push(saveDiary(title, content));
     
     await Promise.all(promises);
     
-    alert('发布成功！');
-    // 清空所有表单
-    document.getElementById('word-input').value = '';
-    document.getElementById('title-input').value = '';
+    showToast();
+    
+    // 清空表单
+    $('title-input').value = '';
+    $('word-input').value = '';
     diaryInput.value = '';
-    charCountDom.textContent = '0';
+    charCount.textContent = '0';
   } catch (e) {
     alert('发布失败: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '发布';
   }
 });
 
-// 页面加载：已登录直接进编辑器
+// === 初始化 ===
 if (isLoggedIn()) {
   showEditor();
 } else {
